@@ -28,31 +28,35 @@ export class MotionSystem extends System {
     for (let i = 0; i < entities.length; i++) {
       transform = entities[i].get(TransformComponent);
       motion = entities[i].get(MotionComponent);
-
       const optionalBody = entities[i].get(BodyComponent);
-      if (this._physicsConfigDirty && optionalBody) {
-        optionalBody.updatePhysicsConfig(this.physics.config.bodies);
-      }
 
-      if (optionalBody?.sleeping) {
-        continue;
-      }
-
-      const totalAcc = motion.acc.clone();
-      if (optionalBody?.collisionType === CollisionType.Active && optionalBody?.useGravity) {
-        totalAcc.addEqual(this.physics.config.gravity);
-      }
-
-      // capture old transform of this entity and all of its children so that
-      // any transform properties that derived from their parents are properly captured
-      if (!entities[i].parent) {
-        this.captureOldTransformWithChildren(entities[i]);
-      }
-
-      // Update transform and motion based on Euler linear algebra
-      EulerIntegrator.integrate(transform, motion, totalAcc, elapsedMs);
+      this.updateEntity(elapsedMs, entities[i], transform, motion, optionalBody);
     }
     this._physicsConfigDirty = false;
+  }
+
+  updateEntity(elapsedMs: number, entity: Entity, transform: TransformComponent, motion: MotionComponent, body?: BodyComponent): void {
+    if (this._physicsConfigDirty && body) {
+      body.updatePhysicsConfig(this.physics.config.bodies);
+    }
+
+    if (body?.sleeping) {
+      return;
+    }
+
+    const totalAcc = motion.acc.clone();
+    if (body?.collisionType === CollisionType.Active && body?.useGravity) {
+      totalAcc.addEqual(this.physics.config.gravity);
+    }
+
+    // capture old transform of this entity and all of its children so that
+    // any transform properties that derived from their parents are properly captured
+    if (!entity.parent) {
+      this.captureOldTransformWithChildren(entity);
+    }
+
+    // Update transform and motion based on Euler linear algebra
+    EulerIntegrator.integrate(transform, motion, totalAcc, elapsedMs);
   }
 
   captureOldTransformWithChildren(entity: Entity) {
