@@ -21,7 +21,8 @@ module.exports = (env, argv) => {
     library: {
       name: 'ex',
       type: 'umd'
-    }
+    },
+    globalObject: 'this'
   };
 
   const esmOutput = {
@@ -29,7 +30,8 @@ module.exports = (env, argv) => {
     filename: mode === 'development' ? '[name].development.js' : '[name].js',
     library: {
       type: 'module'
-    }
+    },
+    globalObject: 'this'
   };
 
   return {

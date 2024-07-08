@@ -7,7 +7,12 @@ import 'core-js/es/object/keys';
 export function polyfill() {
   /* istanbul ignore next */
   if (typeof window === 'undefined') {
-    window = <any>{
+    /*window = <any>{
+      audioContext: function () {
+        return;
+      }
+    };*/
+    globalThis.window = <any>{
       audioContext: function () {
         return;
       }

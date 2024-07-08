@@ -28,6 +28,9 @@ tscommand*
 # Sublime workspace settings #
 *.sublime-workspace
 
+# Webstorm workspace settings #
+*.idea
+
 # OS generated files #
 ######################
 .DS_Store
